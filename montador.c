@@ -450,13 +450,6 @@ int monta(char* fonte, FILE *fileOUT, int numprog) {
 				//return 0;
 			}
 		}
-		if( (strcmp(token,"END")==0) && (numprog==2) ) {
-			end++;
-			if(end>1){
-				printf("ATENÇÃO: O programa possui DUAS diretivas END! Montando mesmo assim...\n");
-				//return 0;
-			}
-		}
 		if(strcmp(token,"ADD")==0) {
 			qtd+=2;
 			endereco+=1;
