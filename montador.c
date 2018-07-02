@@ -3,7 +3,7 @@ Departamento de Ciência da Computação
 Software Básico - Turma B - 2018/1
 Professor Bruno L. Macchiavello
 
-   Trabalho 2 - Montador de Assembly didático
+   Trabalho 2 - Item 1 - Montador de Assembly didático
 GRUPO: LUIS FERNANDO ARRUDA MARQUES - 15/0016271
        NASIRU ADAMU MARAFA          - 11/008055 */
 
@@ -35,8 +35,6 @@ void exibe(SymbTable *tSymb, int tamSymb);
 int checkEnd(SymbTable* tSymb, int tamSymb, char* token);
 void segPassagem(char* fonte, SymbTable* tSymb, int tamSymb, char* token, int endf, FILE *fileOUT);
 
-
-//<FIM eh SECTION TEXT; =>FIM eh SECTION DATA
 
 void exibe(SymbTable *tSymb, int tamSymb) { // Função utilizada apenas para Debug.
 	int i;
@@ -432,24 +430,9 @@ int monta(char* fonte, FILE *fileOUT, int numprog) {
 	char bufferuso[100]="";
 	char uso[100]="";
 	int begin=0,end=0;
-	pos+=getToken(fonte, &pos, token);
 
 	while(pos<tam_fonte) { //se der ruim, mudar para pos<tam_fonte-1
-		if( (strcmp(token,"BEGIN")==0) && (numprog==1) ) {
-			printf("ATENÇÃO: O programa NAO pode ter a diretiva BEGIN! Montando mesmo assim...\n");
-			//return 0;
-		}
-		if( (strcmp(token,"END")==0) && (numprog==1) ) {
-			printf("ATENÇÃO: O programa NAO pode ter a diretiva END! Montando mesmo assim...\n");
-			//return 0;
-		}
-		if( (strcmp(token,"BEGIN")==0) && (numprog==2) ) {
-			begin++;
-			if(begin>1){
-				printf("ATENÇÃO: O programa possui DUAS diretivas BEGIN! Montando mesmo assim...\n");
-				//return 0;
-			}
-		}
+		pos+=getToken(fonte, &pos, token);
 		if(strcmp(token,"ADD")==0) {
 			qtd+=2;
 			endereco+=1;
@@ -643,29 +626,33 @@ int monta(char* fonte, FILE *fileOUT, int numprog) {
 		strcpy(auxtoken,token);
 		strcat(auxtoken," ");
 
-		pos+=getToken(fonte, &pos, token);
-		if( (strcmp(token,"END")==0) && (numprog==1) ) {
-			printf("ATENÇÃO: O programa NAO pode ter a diretiva END! Montando mesmo assim...\n");
-			//return 0;
+		if( strcmp(token,"BEGIN")==0 ) {
+			begin++;
 		}
 
-		if( (strcmp(token,"END")==0) && (numprog==2) ) {
+		if( strcmp(token,"END")==0 ) {
 			end++;
-			if(end>1){
-				printf("ATENÇÃO: O programa possui DUAS diretivas END! Montando mesmo assim...\n");
-				//return 0;
-			}
 		}
-		//printf("qtd: %d\n",qtd);
 	}
-	if (begin<1 && numprog==2){
-		printf("ATENÇÃO: O programa NÃO POSSUI a diretiva BEGIN! Montando mesmo assim...\n");
+	if ( (begin==0) && (numprog==2)){
+		printf("ATENCAO: O programa NAO POSSUI a diretiva BEGIN! Montando mesmo assim...\n");
+		//return 0;
 	}
-	if (end<1 && numprog==2){
-		printf("ATENÇÃO: O programa NÃO POSSUI a diretiva END! Montando mesmo assim...\n");
+	if ( (end==0) && (numprog==2)){
+		printf("ATENCAO: O programa NAO POSSUI a diretiva END! Montando mesmo assim...\n");
+		//return 0;
 	}
+
+	if ( (begin!=0) && (numprog==1)){
+		printf("ATENCAO: O programa NAO deveria possuir diretivas BEGIN! Montando mesmo assim...\n");
+		//return 0;
+	}
+	if ( (end!=0) && (numprog==1)){
+		printf("ATENCAO: O programa NAO deveria possuir diretivas END! Montando mesmo assim...\n");
+		//return 0;
+	}
+
 	linham=1;
-	//printf("pos: %d",pos);
 	fprintf(fileOUT,"H: %d",qtd);
 	fprintf(fileOUT,"%s",uso);
 	segPassagem(fonte, tSymb, tamSymb, token, endereco, fileOUT);
@@ -695,7 +682,7 @@ int main (int argc, char* argv[]) {
 		printf("\n\nERRO! Arquivo 1 não encontrado.\n");
 		return 0;
 	}
-	if((fileOUT=fopen(strcat(file_out,".o"),"w"))==NULL) {   /* abre o arquivo de saida */
+	if((fileOUT=fopen(strcat(file_out,".txt"),"w"))==NULL) {   /* abre o arquivo de saida */
 		printf("\n\nERRO! não foi possivel criar arquivo.\n");
 		return 0;
 	} else {
@@ -714,7 +701,7 @@ int main (int argc, char* argv[]) {
         	return 0;
         }
         printf("\nArquivo fonte 1:\n\n%s\n", fonte);
-        printf("\nArquivo 1 montado com sucesso!\n");
+        printf("\nArquivo 1 montado com sucesso!\n\n");
         fclose(fileOUT);
 	}
 	if (argc>2){
@@ -725,7 +712,7 @@ int main (int argc, char* argv[]) {
 			printf("\n\nERRO! Arquivo 1 não encontrado.\n");
 			return 0;
 		}
-		if((fileOUT=fopen(strcat(file_out2,".o"),"w"))==NULL) {   /* abre o arquivo de saida */
+		if((fileOUT=fopen(strcat(file_out2,".txt"),"w"))==NULL) {   /* abre o arquivo de saida */
 			printf("\n\nERRO! não foi possivel criar arquivo.\n");
 			return 0;
 		} else {
